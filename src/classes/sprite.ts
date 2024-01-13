@@ -3,10 +3,17 @@ import { SpriteClassOptions, SpriteCoordinates, SpriteData, TileOptions, Tile as
 
 import sharp from "sharp";
 
+function booleanToGap(gap?: boolean | number): number {
+   if (typeof gap === "number") return gap;
+   if (typeof gap === "boolean") return !gap ? 0 : 1;
+   return 1;
+}
+
 export default class Sprite {
 
    tileHeight?: number;
    tileWidth?: number;
+   gap: number = 0;
 
    tiles: Tile[] = [];
 
@@ -14,6 +21,8 @@ export default class Sprite {
    constructor(tileWidth: number, tileHeight: number, options?: SpriteClassOptions) {
       this.tileHeight = tileWidth
       this.tileWidth = tileHeight;
+
+      this.gap = booleanToGap(options?.gap);
    }
 
 
@@ -45,7 +54,7 @@ export default class Sprite {
          return true;
       }
 
-      return false; // not found
+      return false;
    }
 
    json(includeImages = false): SpriteData {
@@ -55,8 +64,8 @@ export default class Sprite {
       const width = (this.tileWidth ?? 0);
       const height = (this.tileHeight ?? 0);
 
-      const totalWidth = width * cols;
-      const totalHeight = height * rows;
+      const totalWidth = width * cols + (this.gap * (cols - 1));
+      const totalHeight = height * rows + (this.gap * (rows - 1));
 
       const sprites: Record<string, SpriteCoordinates> = {};
       this.tiles.forEach((tile, i) => {
@@ -70,8 +79,8 @@ export default class Sprite {
          }
 
          sprites[id] = {
-            x: (i % cols) * width,
-            y: Math.floor((i) / cols) * height
+            x: (i % cols) * width + (this.gap * (i % cols)),
+            y: Math.floor((i) / cols) * height + (this.gap * Math.floor((i) / cols))
          };
 
          if (includeImages) {
@@ -98,9 +107,9 @@ export default class Sprite {
             height: spriteConfig.totalHeight,
             channels: 4,
             background: {
-               r: 255,
-               g: 255,
-               b: 255,
+               r: 0,
+               g: 0,
+               b: 0,
                alpha: 0
             }
          }

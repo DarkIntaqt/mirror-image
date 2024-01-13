@@ -22,6 +22,7 @@ export type TileOptions = {
 export type SpriteClassOptions = {
    totalWidth?: number | "AUTO";
    totalHeight?: number | "AUTO";
+   gap?: boolean | number;
 }
 
 export type Tile = {
