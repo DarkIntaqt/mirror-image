@@ -36,6 +36,15 @@ export default class Sprite {
       return tile;
    }
 
+   removeTile(tile: Tile): Boolean {
+      let index = this.tiles.indexOf(tile);
+      if (index !== -1) {
+         this.tiles.splice(index, 1);
+         return true;
+      }
+
+      return false; // not found
+   }
 
    json(): SpriteData {
       const rows = Math.ceil(Math.sqrt(this.tiles.length));

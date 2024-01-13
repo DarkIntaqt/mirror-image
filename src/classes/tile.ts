@@ -8,8 +8,8 @@ export class Tile {
    enabled = true;
 
 
-   constructor(options: TileOptions) {
-      this.id = options.id
+   constructor(options?: TileOptions) {
+      this.id = options?.id
       this.enabled = options?.enabled ?? this.enabled;
    }
 
