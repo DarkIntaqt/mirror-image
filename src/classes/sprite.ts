@@ -11,8 +11,8 @@ function booleanToGap(gap?: boolean | number): number {
 
 export default class Sprite {
 
-   tileHeight?: number;
-   tileWidth?: number;
+   tileHeight: number;
+   tileWidth: number;
    gap: number = 0;
 
    tiles: Tile[] = [];
@@ -89,8 +89,8 @@ export default class Sprite {
       })
 
       return {
-         tileWidth: this.tileWidth ?? 0,
-         tileHeight: this.tileHeight ?? 0,
+         tileWidth: this.tileWidth,
+         tileHeight: this.tileHeight,
          totalWidth: totalWidth,
          totalHeight: totalHeight,
          sprites: sprites
