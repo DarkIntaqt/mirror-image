@@ -12,7 +12,11 @@ export type SpriteData = {
    sprites: Record<string, SpriteCoordinates>;
 };
 
-
+export type TileOptions = {
+   id?: string;
+   image?: Buffer;
+   enabled?: boolean;
+}
 
 export type SpriteClassOptions = {
    totalWidth?: number | "AUTO";
@@ -20,6 +24,6 @@ export type SpriteClassOptions = {
 }
 
 export type Tile = {
-   image?: Blob,
+   image?: Buffer,
    id: string
 }
