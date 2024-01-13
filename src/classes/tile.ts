@@ -9,7 +9,8 @@ export class Tile {
 
 
    constructor(options?: TileOptions) {
-      this.id = options?.id
+      this.id = options?.id;
+      this.image = options?.image;
       this.enabled = options?.enabled ?? this.enabled;
    }
 

@@ -1,6 +1,8 @@
 import { Tile } from "./tile";
 import { SpriteClassOptions, SpriteCoordinates, SpriteData, TileOptions, Tile as TileTypes } from "../../types/sprite.types";
 
+import sharp from "sharp";
+
 export default class Sprite {
 
    tileHeight?: number;
@@ -46,13 +48,14 @@ export default class Sprite {
       return false; // not found
    }
 
-   json(): SpriteData {
-      const rows = Math.ceil(Math.sqrt(this.tiles.length));
+   json(includeImages = false): SpriteData {
+      const cols = Math.ceil(Math.sqrt(this.tiles.length));
+      const rows = (cols * (cols - 1) >= this.tiles.length) ? (cols - 1) : cols;
 
       const width = (this.tileWidth ?? 0);
       const height = (this.tileHeight ?? 0);
 
-      const totalWidth = width * rows;
+      const totalWidth = width * cols;
       const totalHeight = height * rows;
 
       const sprites: Record<string, SpriteCoordinates> = {};
@@ -67,9 +70,13 @@ export default class Sprite {
          }
 
          sprites[id] = {
-            x: (i % rows) * width,
-            y: Math.floor((i) / rows) * height
+            x: (i % cols) * width,
+            y: Math.floor((i) / cols) * height
          };
+
+         if (includeImages) {
+            sprites[id].image = tile.getImage();
+         }
       })
 
       return {
@@ -79,5 +86,46 @@ export default class Sprite {
          totalHeight: totalHeight,
          sprites: sprites
       }
+   }
+
+
+   async generate() {
+      const spriteConfig = this.json(true);
+
+      const sprite = sharp({
+         create: {
+            width: spriteConfig.totalWidth,
+            height: spriteConfig.totalHeight,
+            channels: 4,
+            background: {
+               r: 255,
+               g: 255,
+               b: 255,
+               alpha: 0
+            }
+         }
+      })
+
+      const sprites = Object.values(spriteConfig.sprites);
+
+      let inputs = [];
+
+      for (let i = 0; i < sprites.length; i++) {
+         const tile = sprites[i];
+         if (!tile.image) continue;
+
+         inputs.push({
+            input: await sharp(tile.image).resize({
+               width: spriteConfig.tileWidth,
+               height: spriteConfig.tileHeight,
+               fit: sharp.fit.fill
+            }).png().toBuffer(),
+            left: tile.x,
+            top: tile.y
+         });
+      }
+      await sprite.composite(inputs)
+
+      sprite.toFile("output.webp");
    }
 }

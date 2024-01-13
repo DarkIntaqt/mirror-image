@@ -2,6 +2,7 @@ export type SpriteCoordinates = {
    x: number;
    y: number;
    id?: string;
+   image?: Buffer;
 };
 
 export type SpriteData = {
